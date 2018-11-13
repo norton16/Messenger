@@ -98,8 +98,10 @@ final class ChatClient {
     private final class ListenFromServer implements Runnable {
         public void run() {
             try {
+                while (true) {
                 String msg = (String) sInput.readObject();
                 System.out.print(msg);
+                }
             } catch (IOException | ClassNotFoundException e) {
                 e.printStackTrace();
             }
