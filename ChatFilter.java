@@ -40,9 +40,7 @@ public class ChatFilter {
         }
 
         for (int i = 0; i < badWords.size(); i++) {
-            
-            msg = " " + msg + " ";
-            
+      
             if (msg.contains(badWords.get(i))) {
                 String censoredBadWord = "";
                 for (int j = 0; j < badWords.get(i).length(); j++) {
@@ -50,10 +48,9 @@ public class ChatFilter {
 
                 }
 
-                msg = msg.replaceAll("\\b" + badWords.get(i) + "\\b", censoredBadWord);
+                msg = msg.replaceAllIgnoreCase(badWords.get(i), censoredBadWord);
             }
-            
-            msg.trim();
+           
 
         }
 
