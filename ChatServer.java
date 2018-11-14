@@ -12,7 +12,7 @@ final class ChatServer {
     private static int uniqueId = 0;
     private final List<ClientThread> clients = new ArrayList<>();
     private final int port;
-
+    private ChatFilter cf;
 
     private ChatServer(int port) {
         this.port = port;
