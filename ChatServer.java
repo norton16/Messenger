@@ -12,32 +12,38 @@ final class ChatServer {
     private static int uniqueId = 0;
     private final List<ClientThread> clients = new ArrayList<>();
     private final int port;
+    private ChatFilter cf;
 
 
     private ChatServer(int port) {
+
         this.port = port;
+        cf = new ChatFilter("badwords.txt");
     }
 
     /*
-     * This is what starts the ChatServer.
+     * This is what starts the chatapplication.ChatServer.
      * Right now it just creates the socketServer and adds a new ClientThread to a list to be handled
      */
     private void start() {
         try {
             ServerSocket serverSocket = new ServerSocket(port);
-            Socket socket = serverSocket.accept();
-            Runnable r = new ClientThread(socket, uniqueId++);
-            Thread t = new Thread(r);
-            clients.add((ClientThread) r);
-            t.start();
+
+            while (true) {
+                Socket socket = serverSocket.accept();
+                Runnable r = new ClientThread(socket, uniqueId++);
+                Thread t = new Thread(r);
+                clients.add((ClientThread) r);
+                t.start();
+            }
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
     /*
-     *  > java ChatServer
-     *  > java ChatServer portNumber
+     *  > java chatapplication.ChatServer
+     *  > java chatapplication.ChatServer portNumber
      *  If the port number is not specified 1500 is used
      */
     public static void main(String[] args) {
@@ -47,7 +53,7 @@ final class ChatServer {
 
 
     /*
-     * This is a private class inside of the ChatServer
+     * This is a private class inside of the chatapplication.ChatServer
      * A new thread will be created to run this every time a new client connects.
      */
     private final class ClientThread implements Runnable {
