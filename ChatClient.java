@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
+import java.util.Scanner;
+
 
 final class ChatClient {
     private ObjectInputStream sInput;
@@ -18,6 +20,18 @@ final class ChatClient {
         this.server = server;
         this.port = port;
         this.username = username;
+    }
+
+    private ChatClient(int port, String username) {
+        this("localhost", port, username);
+    }
+
+    private ChatClient(String username) {
+        this("localhost", 1500, username);
+    }
+
+    private ChatClient() {
+        this("localhost", 1500, "Anonymous");
     }
 
     /*
@@ -69,10 +83,10 @@ final class ChatClient {
 
     /*
      * To start the Client use one of the following command
-     * > java ChatClient
-     * > java ChatClient username
-     * > java ChatClient username portNumber
-     * > java ChatClient username portNumber serverAddress
+     * > java chatapplication.ChatClient
+     * > java chatapplication.ChatClient username
+     * > java chatapplication.ChatClient username portNumber
+     * > java chatapplication.ChatClient username portNumber serverAddress
      *
      * If the portNumber is not specified 1500 should be used
      * If the serverAddress is not specified "localHost" should be used
@@ -82,26 +96,60 @@ final class ChatClient {
         // Get proper arguments and override defaults
 
         // Create your client and start it
-        ChatClient client = new ChatClient("localhost", 1500, "CS 180 Student");
-        client.start();
+        ChatClient client;// = new chatapplication.ChatClient("localhost", 1500, "CS 180 Student");
 
         // Send an empty message to the server
-        client.sendMessage(new ChatMessage());
+        switch (args.length) {
+            case 3:
+                client = new ChatClient(args[2],Integer.parseInt(args[1]),args[0]);
+                break;
+            case 2:
+                client = new ChatClient(Integer.parseInt(args[1]), args[0]);
+                break;
+            case 1:
+                client = new ChatClient(args[0]);
+                break;
+            default:
+                client = new ChatClient();
+                break;
+
+        }
+
+        client.start();
+        Scanner in = new Scanner(System.in);
+        while (true) {
+            String line = in.nextLine();
+            if (line.equalsIgnoreCase("/logout")) {
+                ChatMessage cm = new ChatMessage(1, "logout");
+                ChatClient.sendMessage(cm);
+                sInput.close();
+                sOutput.close();
+                socket.close();
+                break;
+            } else {
+                ChatMessage cm2 = new ChatMessage(0, line);
+                ChatClient.sendMessage(cm2);
+            }
+
+        }
     }
 
 
+
     /*
-     * This is a private class inside of the ChatClient
+     * This is a private class inside of the chatapplication.ChatClient
      * It will be responsible for listening for messages from the ChatServer.
      * ie: When other clients send messages, the server will relay it to the client.
      */
     private final class ListenFromServer implements Runnable {
         public void run() {
-            try {
-                String msg = (String) sInput.readObject();
-                System.out.print(msg);
-            } catch (IOException | ClassNotFoundException e) {
-                e.printStackTrace();
+            while  (true) {
+                try {
+                    String msg = (String) sInput.readObject();
+                    System.out.print(msg);
+                } catch (IOException | ClassNotFoundException e) {
+                    e.printStackTrace();
+                }
             }
         }
     }
