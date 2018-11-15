@@ -7,15 +7,27 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
+import static java.lang.Integer.parseInt;
 
 final class ChatServer {
     private static int uniqueId = 0;
     private final List<ClientThread> clients = new ArrayList<>();
     private final int port;
+    private String fileName;
+    private ChatFilter cf;
 
+    private ChatServer(int port, String fileName){
+        this.port = port;
+        this.fileName = fileName;
+        this.cf = new ChatFilter(fileName);
+    }
 
     private ChatServer(int port) {
-        this.port = port;
+        this(port, "src\\badwords.txt");
+    }
+
+    private ChatServer(){
+        this(1500, "src\\badwords.txt");
     }
 
     /*
@@ -25,11 +37,13 @@ final class ChatServer {
     private void start() {
         try {
             ServerSocket serverSocket = new ServerSocket(port);
-            Socket socket = serverSocket.accept();
-            Runnable r = new ClientThread(socket, uniqueId++);
-            Thread t = new Thread(r);
-            clients.add((ClientThread) r);
-            t.start();
+            while(true) {
+                Socket socket = serverSocket.accept();
+                Runnable r = new ClientThread(socket, uniqueId++);
+                Thread t = new Thread(r);
+                clients.add((ClientThread) r);
+                t.start();
+            }
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -41,8 +55,29 @@ final class ChatServer {
      *  If the port number is not specified 1500 is used
      */
     public static void main(String[] args) {
-        ChatServer server = new ChatServer(1500);
-        server.start();
+        ChatServer server;
+        try {
+            if (args.length == 1) {
+                server = new ChatServer(parseInt(args[0]));
+            } else if (args.length == 2) {
+                server = new ChatServer(parseInt(args[0]), args[1]);
+            } else if(args.length > 2){
+                server = new ChatServer();
+                System.out.println("Please Enter a valid command:");
+                System.out.println("\"java ChatServer <port> <name>\"");
+                System.exit(1);
+            } else {
+                server = new ChatServer(1500);
+            }
+            server.start();
+        } catch ( Exception e ){
+
+            System.out.println("Please Enter a valid command:");
+            System.out.println("\"java ChatServer <port> <name>\"");
+            System.exit(1);
+        }
+
+
     }
 
 
