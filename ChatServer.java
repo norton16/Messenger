@@ -1,4 +1,3 @@
-
 package chatapplication;
 
 import java.io.FileNotFoundException;
@@ -174,7 +173,7 @@ final class ChatServer {
             else {
 
                 for (int i= 0; i < clients.size(); i++){
-                    if(  clients.get(i).getUsername().equals( username)){
+                    if(clients.get(i).getUsername().equals(username)){
                         String toSend = date + " " +this.username +" -> " + clients.get(i).getUsername() + ": "+  message+"\n";
                         clients.get(i).writeMessage(toSend);
                         System.out.print(toSend);
@@ -204,14 +203,14 @@ final class ChatServer {
             for (ClientThread c : clients){
                 if(username.equals(c.getUsername())){
                     this.running = false;
-                    this.writeMessage("LOGOUT");
+                    this.writeMessage("Logout Successful.");
                 }
             }
 
         }
 
         private void close(){
-            writeMessage("LOGOUT");
+            writeMessage("Logout Successful.");
             running = false;
             try {
                 socket.close();
@@ -234,7 +233,7 @@ final class ChatServer {
                 } catch (IOException | ClassNotFoundException e) {
                     e.printStackTrace();
                 }
-                System.out.println(username + ": Ping");
+               // System.out.println(username + ": Ping");
 
 
                 // Send message back to the client
@@ -245,11 +244,12 @@ final class ChatServer {
                         directMessage(cm.getMessage(), cm.getRecipient());
                     } else if (cm.getMessType() == ChatMessage.list){
                         String list = date + " List of users connected: ";
-                        for ( int i = 0; i < clients.size(); i ++){
-                            if(i < clients.size() -1){
+                        for (int i = 0; i < clients.size(); i ++){
+                            
+                            if(i < clients.size() -1 && !clients.get(i).getUsername().equals(username) ){
                                 list += clients.get(i).getUsername() + ", ";
                             }
-                            else {
+                            else if (!clients.get(i).getUsername().equals(username) ){
                                 list += clients.get(i).getUsername();
                             }
                         }
@@ -260,9 +260,9 @@ final class ChatServer {
                         this.close();
                         running = false;
                     }
-                    sOutput.writeObject("Pong");
+                    //sOutput.writeObject("Pong");
                 } catch (Exception e) {
-                    e.printStackTrace();
+                   System.out.println("Logout Successful.");
                 }
             }
         }
