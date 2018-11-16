@@ -96,7 +96,8 @@ final class ChatClient {
         // Get proper arguments and override defaults
 
         // Create your client and start it
-        ChatClient client;// = new chatapplication.ChatClient("localhost", 1500, "CS 180 Student");
+        ChatClient client;
+        // = new chatapplication.ChatClient("localhost", 1500, "CS 180 Student");
 
         // Send an empty message to the server
         switch (args.length) {
@@ -166,7 +167,8 @@ final class ChatClient {
                     String msg = (String) sInput.readObject();
                     System.out.print(msg);
                 } catch (IOException | ClassNotFoundException e) {
-                    //e.printStackTrace();
+                    System.out.println("logged out");
+                    break;
                 }
             }
         }
