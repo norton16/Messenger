@@ -119,20 +119,34 @@ final class ChatClient {
         Scanner in = new Scanner(System.in);
         while (true) {
             String line = in.nextLine();
+            ChatMessage cm2 = null;
             if (line.equalsIgnoreCase("/logout")) {
-                ChatMessage cm = new ChatMessage(1, "logout");
-                ChatClient.sendMessage(cm);
-                sInput.close();
-                sOutput.close();
-                socket.close();
+                ChatMessage cm = new ChatMessage(ChatMessage.logout, "logout");
+                client.sendMessage(cm);
+                try {
+                    client.sInput.close();
+                    client.sOutput.close();
+                    client.socket.close();
+                    return;
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                System.exit(0);
                 break;
-            } else {
-                ChatMessage cm2 = new ChatMessage(0, line);
-                ChatClient.sendMessage(cm2);
+            } else if (line.contains(" ") && line.substring(0, line.indexOf(" ")).equals("/msg")) {
+                String[] message = line.split(" ");
+                String recipient = message[1];
+                line = line.substring(line.indexOf(message[1])+message[1].length()+1);
+                cm2 = new ChatMessage(ChatMessage.dm, line, recipient);
+            }else {
+                cm2 = new ChatMessage(ChatMessage.broadcast, line);
             }
 
+            client.sendMessage(cm2);
         }
+
     }
+
 
 
 
@@ -148,7 +162,7 @@ final class ChatClient {
                     String msg = (String) sInput.readObject();
                     System.out.print(msg);
                 } catch (IOException | ClassNotFoundException e) {
-                    e.printStackTrace();
+                    //e.printStackTrace();
                 }
             }
         }
