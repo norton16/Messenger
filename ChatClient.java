@@ -136,9 +136,13 @@ final class ChatClient {
             } else if (line.contains(" ") && line.substring(0, line.indexOf(" ")).equals("/msg")) {
                 String[] message = line.split(" ");
                 String recipient = message[1];
-                line = line.substring(line.indexOf(message[1])+message[1].length()+1);
+                line = line.substring(line.indexOf(message[1]) + message[1].length() + 1);
                 cm2 = new ChatMessage(ChatMessage.dm, line, recipient);
-            }else {
+            } else if (line.equalsIgnoreCase("/list")) {
+
+                cm2 = new ChatMessage(ChatMessage.list, "list");
+
+            } else {
                 cm2 = new ChatMessage(ChatMessage.broadcast, line);
             }
 
