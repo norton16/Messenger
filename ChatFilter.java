@@ -32,9 +32,9 @@ public class ChatFilter {
                 }
                 badWords.add(word);
 
-                fr.close();
-                br.close();
             }
+            fr.close();
+            br.close();
 
         } catch (Exception e) {
             e.printStackTrace();
